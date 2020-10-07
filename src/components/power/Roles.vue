@@ -10,8 +10,22 @@
     <!-- 卡片视图 -->
     <el-card>
       <!-- 添加角色按钮区域 -->
-      <el-row>
-        <el-col>
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-input
+            placeholder="请输入角色 ID"
+            v-model="queryRoleId"
+            clearable
+            @clear="getRolesList"
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="getRolesList"
+            ></el-button>
+          </el-input>
+        </el-col>
+        <el-col :span="4">
           <el-button type="primary">添加角色</el-button>
         </el-col>
       </el-row>
@@ -134,6 +148,8 @@ export default {
       defKeys: [],
       // 当前即将分配权限的角色id
       roleId: "",
+      // 查询角色id
+      queryRoleId: "",
     };
   },
   created() {
@@ -142,13 +158,16 @@ export default {
   methods: {
     // 获取所有角色的列表
     async getRolesList() {
-      const { data: res } = await this.$http.get("roles");
+      const { data: res } = await this.$http.get("roles/" + this.queryRoleId);
 
       if (res.meta.status !== 200) {
         return this.$message.error("获取角色列表失败！");
       }
-
-      this.rolelist = res.data;
+      if (this.queryRoleId !== "") {
+        this.rolelist = [res.data];
+      } else {
+        this.rolelist = res.data;
+      }
 
       console.log(this.rolelist);
     },
